@@ -53,9 +53,7 @@ gulp.task('default', function(cb) {
                 }
             }
         }))
-
-
-    .pipe(gulp.dest('./build/'));
+        .pipe(gulp.dest('./build/'));
 
     gulp.src(['./static/images/*'])
         .pipe(gulp.dest('./build/images/'));

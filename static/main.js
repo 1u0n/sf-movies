@@ -31,7 +31,9 @@ function notifyUser(message) {
 }
 
 function closeNotifier() {
-    document.querySelector("#notification").className = 'animated fadeOutDown';
+    var elem = document.querySelector("#notification");
+    if (elem.className != 'invisible')
+        elem.className = 'animated fadeOutDown';
 }
 
 function swapMap() {
@@ -64,7 +66,7 @@ function setOtherMapVisible() {
     currentProvider = OTHER;
     if (!notifiedAboutOtherMaps) {
         notifiedAboutOtherMaps = true;
-        notifyAboutOtherMaps();
+        setTimeout(notifyAboutOtherMaps, 2000);
     }
 }
 
@@ -147,7 +149,7 @@ function GeocodeCallCenter(func, numberCalls) {
 /**  sets up the suggestions library */
 function initAutocomplete() {
     AutoComplete({
-        EmptyMessage: "No match found",
+        EmptyMessage: "No movies found",
         MinChars: 1,
         Delay: 500,
         RequestTimeout: 5000,
@@ -195,6 +197,9 @@ function initAutocomplete() {
             notifyUser("Error retrieving suggestions, please try again");
         },
         _Select: function(item) {
+
+            console.log("_SELECT");
+
             if (currentProvider === GOOGLE)
                 clearAllMarkersGoogle();
             else
@@ -237,6 +242,13 @@ function initAutocomplete() {
             if (response && !response.length)
                 return undefined;
             return response;
+        },
+        _Blur: function(event) {
+            event.preventDefault();
+            var that = this;
+            setTimeout(function() {
+                that.DOMResults.setAttribute("class", "autocomplete");
+            }, 150);
         }
     }, "#movie-title");
 }
@@ -690,16 +702,16 @@ function initOtherMap(force) {
         center: [37.7881209, -122.3954958],
         zoom: 12,
         attributionControl: false,
-        layers: [tonerLayer, markersOther]
+        layers: [positronLayer, markersOther]
     });
 
     var baseLayers = {
+        "Positron": positronLayer,
         "WaterColor": watercolorLayer,
         "WheatPaste": wheatpasteLayer,
         "Toner": tonerLayer,
         "Ocean Base": oceanbaseLayer,
         "AC/CD": thunderforestSpinalLayer,
-        "Positron": positronLayer,
         "Satellite": satelliteLayer
     };
 
