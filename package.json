@@ -1,0 +1,29 @@
+{
+    "name": "sf-movies",
+    "version": "1.0.0",
+    "description": "search for movies filmed in San Francisco and see on a map where exactly they were filmed",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Juan López",
+    "dependencies": {
+        "autocomplete-js": "^2.6.3",
+        "express": "^4.15.3"
+    },
+    "devDependencies": {
+        "babel-preset-es2015": "^6.24.1",
+        "gulp": "^3.9.1",
+        "gulp-babel": "^6.1.2",
+        "gulp-clean-css": "^3.6.0",
+        "gulp-concat-css": "^2.3.0",
+        "gulp-htmlmin": "^3.0.0",
+        "gulp-remove-logging": "^1.2.0",
+        "gulp-replace": "^0.6.1",
+        "gulp-rm-lines": "0.0.9",
+        "gulp-uglify": "^3.0.0",
+        "through2": "^2.0.3",
+        "uglify-es": "^3.0.24"
+    }
+}
