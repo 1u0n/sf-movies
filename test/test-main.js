@@ -4,10 +4,11 @@ var html = fs.readFileSync("static/main.html", { encoding: 'utf-8' })
 require('jsdom-global')(html);
 
 
+var code = require('../static/main.js');
+var GeocodeCallCenter = code.GeocodeCallCenter;
+var cleanLocation = code.cleanLocation;
 
 describe('testing GeocodeCallCenter class', function() {
-
-    var GeocodeCallCenter = require('../static/main.js').GeocodeCallCenter;
 
     var i;
     var geoCallCenter;
@@ -60,5 +61,18 @@ describe('testing GeocodeCallCenter class', function() {
         assert.equal(geoCallCenter.queuedCalls.length, 0);
         assert.equal(document.querySelector("#loading-message").textContent, "Loading 10/10");
     });
+
+});
+
+
+
+describe('testing cleanLocation function', function() {
+
+    it('check addresses commonly found in the DB', function() {
+        assert.equal(cleanLocation("San Francisco Chronicle (901 Mission Street at 15th Street)").trim(), "15th street");
+        assert.equal(cleanLocation("Sam Jordan's Bar and Grill, 4004 3rd st").trim(), "4004 3rd st");
+        assert.equal(cleanLocation("Chestnut St. from Larkin to Columbus").trim(), "chestnut st.");
+        assert.equal(cleanLocation("Park 77 (now called The Lister Bar), 77 Cambon Dr.").trim(), "the lister bar");
+    })
 
 });
