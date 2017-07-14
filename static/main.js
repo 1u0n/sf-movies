@@ -25,8 +25,12 @@ document.querySelector("#notification button").onclick = closeNotifier;
 
 document.querySelector("#swap-maps").onclick = swapMap;
 
-function notifyUser(message) {
+function notifyUser(message, important) {
     var elem = document.querySelector('#notification');
+    if (important)
+        elem.querySelector('h3').style.display = "block";
+    else
+        elem.querySelector('h3').style.display = "none";
     elem.querySelector('p').textContent = message;
     elem.className = 'animated fadeInUp';
 }
@@ -129,8 +133,10 @@ class GeocodeCallCenter {
             this.happenedError = errorStr;
         updateUIFinishedCalls(++this.finishedCalls, this.totalCalls);
         if (--this.ongoingCalls < 3 && this.queuedCalls.length !== 0) {
-            this.ongoingCalls++;
-            (this.queuedCalls.shift())();
+            setTimeout(function() {
+                this.ongoingCalls++;
+                (this.queuedCalls.shift())();
+            }.bind(this), 150);
         }
         if (this.finishedCalls === this.totalCalls)
             this.allCallsFinished();
@@ -176,21 +182,25 @@ function initAutocomplete() {
         _Post: function(response) {
             document.querySelector('img.loading').setAttribute("class", "loading animated fadeOutUp");
             var json;
-            if (typeof response === "string")
-                json = JSON.parse(response);
-            else //response coming from cache, already parsed
+            if (typeof response === "string") {
+                try {
+                    json = JSON.parse(response);
+                } catch (e) {
+                    json = null;
+                }
+            } else //response coming from cache, already parsed
                 json = response;
 
             movieResults.length = 0;
 
-            if (Object.keys(json).length === 0)
+            if (!json || Object.keys(json).length === 0)
                 return "";
 
             movieResults = json;
 
             var auxMap = new Map();
             return json.filter((movie) => {
-                    if (auxMap.get(movie.title))
+                    if (!movie.locations || auxMap.get(movie.title))
                         return false;
                     auxMap.set(movie.title, true);
                     return true;
@@ -204,11 +214,11 @@ function initAutocomplete() {
         },
         _RequestError: function() {
             document.querySelector('img.loading').setAttribute("class", "loading animated fadeOutUp");
-            notifyUser("Error retrieving suggestions, please try again");
+            notifyUser("Error retrieving suggestions, please try again", true);
         },
         _Select: function(item) {
 
-            console.log("_SELECT");
+            console.log("an item's been selected");
 
             if (currentProvider === GOOGLE)
                 clearAllMarkersGoogle();
@@ -255,10 +265,9 @@ function initAutocomplete() {
         },
         _Blur: function(event) {
             event.preventDefault();
-            var that = this;
             setTimeout(function() {
-                that.DOMResults.setAttribute("class", "autocomplete");
-            }, 150);
+                this.DOMResults.setAttribute("class", "autocomplete");
+            }.bind(this), 150);
         }
     }, "#movie-title");
 }
@@ -332,7 +341,12 @@ function createNominatimGeocodeRequest(movie) {
     request.timeout = 6000;
     request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
-            var json = JSON.parse(request.responseText);
+            var json;
+            try {
+                json = JSON.parse(request.responseText);
+            } catch (e) {
+                json = [];
+            }
             if (json.length) {
                 geoCallCenter.notifyCallFinished();
                 return addMarkerOther(json[0].lat, json[0].lon, movie.locations, createMovieInfo(movie));
@@ -489,7 +503,7 @@ function initGoogleMap(force) {
     }
 
     if (typeof google === 'undefined')
-        return notifyUser("Google maps failed to load");
+        return notifyUser("Google maps failed to load", true);
 
     geocoderGoogle = new google.maps.Geocoder();
     infowindowGoogle = new google.maps.InfoWindow();
@@ -660,7 +674,7 @@ function initOtherMap(force) {
     }
 
     if (typeof L === 'undefined')
-        return notifyUser("failed to load other maps");
+        return notifyUser("failed to load other maps", true);
 
     var wheatpasteLayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             id: 'mapbox.wheatpaste',
@@ -745,6 +759,7 @@ function clearAllMarkersOther() {
 
 //removeIf(production)
 module.exports = {
-    GeocodeCallCenter: GeocodeCallCenter
+    GeocodeCallCenter: GeocodeCallCenter,
+    cleanLocation: cleanLocation
 };
 //endRemoveIf(production)
