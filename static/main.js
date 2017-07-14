@@ -132,10 +132,12 @@ class GeocodeCallCenter {
         if (errorStr)
             this.happenedError = errorStr;
         updateUIFinishedCalls(++this.finishedCalls, this.totalCalls);
-        if (--this.ongoingCalls < 3 && this.queuedCalls.length !== 0) {
+        if (--this.ongoingCalls < 3 && this.queuedCalls.length) {
             setTimeout(function() {
-                this.ongoingCalls++;
-                (this.queuedCalls.shift())();
+                if (this.queuedCalls.length) {
+                    this.ongoingCalls++;
+                    (this.queuedCalls.shift())();
+                }
             }.bind(this), 150);
         }
         if (this.finishedCalls === this.totalCalls)
