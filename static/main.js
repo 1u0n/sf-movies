@@ -14,7 +14,8 @@ var movieResults = [],
     goToOtherMsg = "try different maps",
     googleMapsAlreadyLoaded = false,
     otherMapsAlreadyLoaded = false,
-    notifiedAboutOtherMaps = false;
+    notifiedAboutOtherMaps = false,
+    geoCallCenter;
 
 
 //UI-related startup actions and functions
@@ -87,62 +88,71 @@ function setSwapMapVisible() {
     document.querySelector('#swap-maps').className = "animated fadeInLeft right";
 }
 
-
-/**
- *  utility to control the calls the user makes to 3rd party geocode services:
- *    -allows a maximum of 3 parallel calls, preventing making too many requests in short period of time and getting throttled
- *    -knows how many calls finished and updates the UI with that info
- */
-var geoCallCenter;
-
-function GeocodeCallCenter(func, numberCalls) {
-
-    //preparing the UI
+function prepareUIForGeocodeCalls(numberCalls) {
     document.querySelector("#loading-image").style.display = "none";
     document.querySelector("#movie-title").disabled = true;
     var elem = document.querySelector("#loading-span");
     elem.querySelector("#loading-message").textContent = "Loading 0/" + numberCalls;
     elem.setAttribute("class", "loading animated fadeInLeft");
+}
 
-    //the actual object used to control calls
-    return {
-        totalCalls: numberCalls,
-        finishedCalls: 0,
-        ongoingCalls: 0,
-        queuedCalls: [],
-        func: func,
-        happenedError: null,
-        notifyCallFinished: function(errorStr) {
-            if (errorStr)
-                this.happenedError = errorStr;
-            document.querySelector("#loading-message").textContent = "Loading " + ++this.finishedCalls + "/" + this.totalCalls;
-            if (--this.ongoingCalls < 3 && this.queuedCalls.length !== 0) {
-                this.ongoingCalls++;
-                (this.queuedCalls.shift())();
-            }
-            if (this.finishedCalls === this.totalCalls)
-                this.allCallsFinished();
-        },
-        setFunc: function(f) {
-            this.func = f;
-        },
-        call: function() {
+function prepareUIFinishedGeocodeCalls() {
+    document.querySelector("#movie-title").disabled = false;
+    setTimeout(function() {
+        document.querySelector("#loading-span").setAttribute("class", "loading animated fadeOutUp");
+    }, 1000);
+}
+
+function updateUIFinishedCalls(finished, total) {
+    document.querySelector("#loading-message").textContent = "Loading " + finished + "/" + total;
+}
+
+
+/**
+ *  utility to control the calls the user makes to 3rd party geocode services:
+ *    -allows a maximum of 3 parallel calls, preventing making too many requests in short period of time and getting throttled
+ *    -knows how many calls finished and updates the UI accordingly
+ */
+class GeocodeCallCenter {
+
+    constructor(f, numberCalls) {
+        this.func = f;
+        this.totalCalls = numberCalls;
+        this.finishedCalls = 0;
+        this.ongoingCalls = 0;
+        this.queuedCalls = [];
+        this.happenedError = null;
+    }
+
+    notifyCallFinished(errorStr) {
+        if (errorStr)
+            this.happenedError = errorStr;
+        updateUIFinishedCalls(++this.finishedCalls, this.totalCalls);
+        if (--this.ongoingCalls < 3 && this.queuedCalls.length !== 0) {
+            this.ongoingCalls++;
+            (this.queuedCalls.shift())();
+        }
+        if (this.finishedCalls === this.totalCalls)
+            this.allCallsFinished();
+    }
+
+    call() {
+        if (this.finishedCalls + this.ongoingCalls < this.totalCalls) {
             if (this.ongoingCalls > 2) {
                 this.queuedCalls.push(this.func.bind(null, arguments[0]));
             } else {
                 this.ongoingCalls++;
                 this.func.apply(null, arguments);
             }
-        },
-        allCallsFinished: function() {
-            if (this.happenedError)
-                notifyUser(this.happenedError);
-            document.querySelector("#movie-title").disabled = false;
-            setTimeout(function() {
-                document.querySelector("#loading-span").setAttribute("class", "loading animated fadeOutUp");
-            }, 1000);
         }
     }
+
+    allCallsFinished() {
+        if (this.happenedError)
+            notifyUser(this.happenedError);
+        prepareUIFinishedGeocodeCalls();
+    }
+
 }
 
 
@@ -270,10 +280,12 @@ function locateMovieOnMap(title) {
         return true;
     })
 
+    prepareUIForGeocodeCalls(movies.length);
     if (currentProvider === GOOGLE)
-        geoCallCenter = GeocodeCallCenter(createGoogleGeocodeRequest, movies.length);
+        geoCallCenter = new GeocodeCallCenter(createGoogleGeocodeRequest, movies.length);
     else
-        geoCallCenter = GeocodeCallCenter(createNominatimGeocodeRequest, movies.length);
+        geoCallCenter = new GeocodeCallCenter(createNominatimGeocodeRequest, movies.length);
+
     movies.forEach((movie) => {
         geoCallCenter.call(movie);
     })
@@ -314,10 +326,10 @@ function createGoogleGeocodeRequest(movie) {
  */
 function createNominatimGeocodeRequest(movie) {
     var request = new XMLHttpRequest();
-    request.timeout = 6000;
     request.open('GET',
         'http://nominatim.openstreetmap.org/search/us/california/san francisco/' + (movie.retrying ? cleanLocation(movie.locations) : movie.locations) + '?format=json&limit=1&namedetails=0&extratags=0',
         true);
+    request.timeout = 6000;
     request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
             var json = JSON.parse(request.responseText);
@@ -727,6 +739,12 @@ function addMarkerOther(lat, lng, title, infoContent) {
 
 
 function clearAllMarkersOther() {
-    //markersOther.remove();
     markersOther.clearLayers();
 }
+
+
+//removeIf(production)
+module.exports = {
+    GeocodeCallCenter: GeocodeCallCenter
+};
+//endRemoveIf(production)

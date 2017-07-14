@@ -6,7 +6,7 @@ app.disable('x-powered-by');
 app.use(express.static(path.join(__dirname, 'build')));
 
 
-app.get('/', function(req, res) {
+app.get('/sf-movies', function(req, res) {
     res.sendFile('build/main.html', { root: __dirname });
 });
 
@@ -30,6 +30,11 @@ app.use((err, req, res, next) => {
     }
 });
 
-app.listen(3000, function() {
-    console.log('Server running!')
+
+var port = 3000;
+if (process.argv.length > 2 && process.argv[2] && !isNaN(parseInt(process.argv[2])))
+    port = parseInt(process.argv[2]);
+
+app.listen(port, function() {
+    console.log('Server running on port ' + port)
 })

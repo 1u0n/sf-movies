@@ -7,12 +7,14 @@ var gulp = require('gulp'),
     cleanCSS = require('gulp-clean-css'),
     concatCss = require('gulp-concat-css'),
     removeLogging = require("gulp-remove-logging"),
-    rmLines = require('gulp-rm-lines');
+    removeCode = require('gulp-remove-code');
 
 
 gulp.task('default', function(cb) {
 
+    //compile main.js and insert it into the html file as a <script>
     gulp.src('./static/main.js')
+        .pipe(removeCode({ production: true }))
         .pipe(removeLogging({
             methods: ["log", "info", "warn", "count", "clear", "trace", "debug", "dir"] //only leave "error"
         }))
@@ -20,12 +22,7 @@ gulp.task('default', function(cb) {
         .pipe(uglify({ ie8: true }))
         .pipe(through.obj(function(file, enc, cb) {
             gulp.src('./static/main.html')
-                .pipe(rmLines({
-                    'filters': [
-                        /src="main\.js/i,
-                        /href="autocomplete\.css/i,
-                    ]
-                }))
+                .pipe(removeCode({ production: true }))
                 .pipe(replace(
                     '//.js generated at build time',
                     file.contents.toString('utf8')

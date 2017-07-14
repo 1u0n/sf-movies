@@ -177,7 +177,8 @@ body {
 #notification-othermaps b {
     position: relative;
     top: -13px;
-    right: -44px;
+    right: -40px;
+    z-index: 20;
 }
 
 #triangle-right {
