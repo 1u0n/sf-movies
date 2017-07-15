@@ -55,7 +55,7 @@ npm install -g gulp-cli mocha
 
 
 ## Reviewers
-if you know this is a coding challenge, then you'll probably find more useful info [here](https://github.com/1u0n/sf-movies/challenge).
+if you know this is a coding challenge, then you'll probably find more useful info [here](https://github.com/1u0n/sf-movies/tree/master/challenge).
 
 
 ## Disclaimer

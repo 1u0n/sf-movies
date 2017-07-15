@@ -3,6 +3,7 @@
 I've done this project as part of a coding challenge for a backend/api software engineer position.
  
  
+ 
 ## Why did I choose the challenge about the maps
 
 I had never done anything with map apis, so I thought it'd be a good opportunity to solve the challenge and learn something at the same time.
@@ -43,6 +44,7 @@ I decided to go with #3. The api token problem is not important as most of them 
 - Rest of things: Node, Express, Gulp, Mocha... I'm used to them and they do well the work for this case. I actually have more experience in the Java world but it's not the most appropiate for this case.
 - Why no frameworks? On the frontend I've only used React, I don't have experience with Angular, Ember, etc.. I use frameworks very selectively or for big applications, when the scale of its use gives me advantages over the problems inherent to adding a layer to the app / loss of flexibility / forcing a way of doing things.
 - Why no frontend libraries? I've used jQuery many years, but for simple DOM selection/manipulation, I don't think there's need for it.
+- The code's been written with VS Code.
 
 ## Security
 - user calls to 3rd party apis are https if the call carries any token, http otherwise.
