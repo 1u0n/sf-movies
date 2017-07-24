@@ -3,11 +3,11 @@ var path = require('path');
 
 var app = express();
 app.disable('x-powered-by');
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 
 app.get('/sf-movies', function(req, res) {
-    res.sendFile('build/main.html', { root: __dirname });
+    res.sendFile('dist/main.html', { root: __dirname });
 });
 
 

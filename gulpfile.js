@@ -6,40 +6,29 @@ var gulp = require('gulp'),
     htmlmin = require('gulp-htmlmin'),
     cleanCSS = require('gulp-clean-css'),
     concatCss = require('gulp-concat-css'),
-    removeLogging = require("gulp-remove-logging"),
-    removeCode = require('gulp-remove-code');
+    removeLogging = require("gulp-remove-logging");
 
 
 gulp.task('default', function(cb) {
 
-    //compile main.js and insert it into the html file as a <script>
-    gulp.src('./static/main.js')
-        .pipe(removeCode({ production: true }))
+    //mini & uglify the webpack-ed bundle and insert it into the html file as a <script>
+    gulp.src(['./dist/bundle.js'])
         .pipe(removeLogging({
             methods: ["log", "info", "warn", "count", "clear", "trace", "debug", "dir"] //only leave "error"
         }))
         .pipe(babel({ presets: ['es2015'] }))
         .pipe(uglify({ ie8: true }))
         .pipe(through.obj(function(file, enc, cb) {
-            gulp.src('./static/main.html')
-                .pipe(removeCode({ production: true }))
+            gulp.src('./src/html/main.html')
                 .pipe(replace(
-                    '//.js generated at build time',
+                    '//bundle.js generated at build time',
                     file.contents.toString('utf8')
                 ))
                 .pipe(htmlmin({ collapseWhitespace: true }))
-                .pipe(gulp.dest('./build/'));
+                .pipe(gulp.dest('./dist/'));
         }))
 
-    gulp.src('./static/autocomplete.js')
-        .pipe(removeLogging({
-            methods: ["log", "info", "warn", "count", "clear", "trace", "debug", "dir"] //only leave "error"
-        }))
-        .pipe(babel({ presets: ['es2015'] }))
-        .pipe(uglify({ ie8: true }))
-        .pipe(gulp.dest('./build/'));
-
-    gulp.src(['./static/main.css', './static/autocomplete.css'])
+    gulp.src(['./src/css/main.css', './src/css/autocomplete.css'])
         .pipe(concatCss("main.css"))
         .pipe(cleanCSS({
             compatibility: 'ie8',
@@ -50,9 +39,9 @@ gulp.task('default', function(cb) {
                 }
             }
         }))
-        .pipe(gulp.dest('./build/'));
+        .pipe(gulp.dest('./dist/'));
 
-    gulp.src(['./static/images/*'])
-        .pipe(gulp.dest('./build/images/'));
+    gulp.src(['./resources/images/*'])
+        .pipe(gulp.dest('./dist/images/'));
 
 });

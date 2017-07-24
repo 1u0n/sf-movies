@@ -3,10 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <!--removeIf(production)-->
-    <script async src="main.js"></script>
-    <link rel="stylesheet" href="autocomplete.css" />
-    <!--endRemoveIf(production)-->
     <link rel="stylesheet" href="main.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css" />
 </head>
@@ -40,14 +36,12 @@
         <span><b> more maps here </b></span><span id="triangle-right"></span>
     </div>
 
+
     <script>
-        //.js generated at build time
+        //bundle.js generated at build time
     </script>
-
-
-    <script async defer src="autocomplete.js" onload="initAutocomplete()"></script>
-    <script async defer src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js" onload="initOtherMap()"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5b5eT8tJ-uGNccJpflGNsL1Xug-VcvHE&callback=initGoogleMap"></script>
+    <script async defer src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js" onload="sf_movies.initOtherMap()"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5b5eT8tJ-uGNccJpflGNsL1Xug-VcvHE&callback=sf_movies.initGoogleMap"></script>
 
 </body>
 

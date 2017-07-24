@@ -1,12 +1,11 @@
 var assert = require('assert');
 var fs = require('fs');
-var html = fs.readFileSync("static/main.html", { encoding: 'utf-8' })
+var html = fs.readFileSync("src/html/main.html", { encoding: 'utf-8' })
 require('jsdom-global')(html);
 
+var GeocodeCallCenter = require('../src/js/geocodeCallCenter.js').GeocodeCallCenter;
+var cleanLocation = require('../src/js/locationCleaner.js').cleanLocation;
 
-var code = require('../static/main.js');
-var GeocodeCallCenter = code.GeocodeCallCenter;
-var cleanLocation = code.cleanLocation;
 
 describe('testing GeocodeCallCenter class', function() {
 

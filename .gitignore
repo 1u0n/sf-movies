@@ -1,22 +1,5 @@
-logs
-*.log
-
-pids
-*.pid
-*.seed
-
-lib-cov
-
-coverage
-
-build
+dist
 
 node_modules
 
-npm-debug.log
-
-poc
-
 .vscode
-
-./package-lock.json

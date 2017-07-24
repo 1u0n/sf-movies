@@ -1,6 +1,8 @@
 # SF-MOVIES #
 
 a website where you can find film locations and details about every movie ever filmed in San Francisco. Just type in some movie name and see where exactly it was filmed on a map, or type in a letter and choose a movie from the suggestions.
+
+Have a look at the [demo](http://128.199.150.245/sf-movies)
  
  
 ## Maps
@@ -28,14 +30,8 @@ used to create sf-movies website:
   - OpenStreetMap's [Nomitanim](http://nominatim.openstreetmap.org) open service
 - nodejs
 - express
-- gulp, babel for builds
+- gulp, webpack, babel for builds
 - mocha, jsdom for tests
-
-
-## See it live
-you can have a look at the [live demo](http://128.199.150.245/sf-movies)
-
-
 
 ## Build it
 clone or download this repo, and in the new folder execute:
@@ -47,16 +43,11 @@ npm run build
 npm start [port]     <-- optional port, 3000 by default
 ```
 
-you'll have to install globally Gulp for the builds and Mocha for the tests, if you don't have them:
+you'll have to install globally Gulp and Webpack for the builds and Mocha for the tests, if you don't have them:
 
 ```
-npm install -g gulp-cli mocha
+npm install -g gulp-cli webpack mocha
 ```
-
-
-## Reviewers
-if you know this is a coding challenge, then you'll probably find more useful info [here](https://github.com/1u0n/sf-movies/tree/master/challenge).
-
 
 ## Disclaimer
 This is just a test project for me to learn new stuff. Use it as you like and don't expect it to work flawlessly.
