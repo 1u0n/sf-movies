@@ -10,7 +10,7 @@ you've got plenty of available maps to choose from. Find Google Maps too boring?
  
  
 ## Data
-all film locations and information are provided by [SF Open Data](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am) and the San Francisco Film Commission. Using this website you will be contacting directly San Francisco government's open databases.
+all film locations and information are provided by [SF Open Data](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am) and the San Francisco Film Commission. This app connects directly to San Francisco government's open apis.
 
 ## Technologies
 used to create sf-movies website:
